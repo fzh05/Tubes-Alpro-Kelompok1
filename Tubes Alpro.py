@@ -201,7 +201,7 @@ def main_window(username):
 def add_question(window, username):
     add_window = tk.Toplevel(window)
     add_window.title("Tambah Soal")
-    add_window.geometry("400x200")
+    add_window.geometry("500x450")
     add_window.config(bg="#081F5C")
 
     matkul_options = list(questions.keys())
@@ -219,7 +219,7 @@ def show_add_question_form(matkul, add_window, username):
     # Menampilkan form untuk menambahkan soal
     question_window = tk.Toplevel()
     question_window.title(f"Tambah Soal untuk {matkul}")
-    question_window.geometry("400x350")
+    question_window.geometry("650x600")
     question_window.config(bg="#081F5C")
 
     # Input untuk soal
@@ -267,7 +267,7 @@ def show_add_question_form(matkul, add_window, username):
 def show_matkul_selection(window):
     matkul_window = tk.Toplevel(window)
     matkul_window.title("Pilih Mata Kuliah")
-    matkul_window.geometry("400x200")
+    matkul_window.geometry("600x550")
     matkul_window.config(bg="#081F5C")
 
     for matkul in questions.keys():
