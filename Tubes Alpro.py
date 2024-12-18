@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox as msg
-import json #JavaScriptObjectNotation (buat  format data yang lebih mudah dibaca)
-import os 
+
 
 # Menyimpan soal berdasarkan mata kuliah
 questions = {
@@ -14,29 +13,31 @@ questions = {
 }
 
 # === Fungsi untuk menyimpan pertanyaan ke dalam file json === 
-def save_question():
+# === Fungsi untuk menyimpan pertanyaan ke dalam file teks === 
+def save_question_txt():
     try:
-        with open("pertanyaan.json", "w") as file:
-            json.dump(questions, file, indent=4)
-        print("Pertanyaan berhasil disimpan ke pertanyaan.json.")
+        with open("pertanyaan.txt", "w") as file:
+            for question in questions:
+                file.write(question + "\n")
+        print("Pertanyaan berhasil disimpan ke pertanyaan.txt.")
     except Exception as e:
         print(f"Terjadi kesalahan saat menyimpan pertanyaan: {e}")
 
-def load_question():
+# === Fungsi untuk memuat pertanyaan dari file teks ===
+def load_question_txt():
     try:
-        with open("pertanyaan.json", "r") as file:
+        with open("pertanyaan.txt", "r") as file:
             global questions
-            questions = json.load(file)
-        print("Pertanyaan berhasil dimuat dari pertanyaan.json.")
+            questions = [line.strip() for line in file.readlines()]
+        print("Pertanyaan berhasil dimuat dari pertanyaan.txt.")
     except FileNotFoundError:
-        print("File pertanyaan.json tidak ditemukan. Memulai dengan daftar kosong.")
-    except json.JSONDecodeError:
-        print("File pertanyaan.json rusak atau format tidak valid.")
+        print("File pertanyaan.txt tidak ditemukan. Memulai dengan daftar kosong.")
+        questions = []
     except Exception as e:
         print(f"Terjadi kesalahan saat memuat pertanyaan: {e}")
 
 # muat pertanyaan saat program dimulai
-load_question()
+load_question_txt()
 
 # === Fungsi Menu ===
 def about_me():
