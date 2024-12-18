@@ -13,16 +13,30 @@ questions = {
     "Teori Peluang": []
 }
 
-# === Fungsi untuk Load dan Save Soal ke File JSON ===
-def load_questions_from_file():
-    if os.path.exists("questions.json"):
-        with open("questions.json", "r") as file:
+# === Fungsi untuk menyimpan pertanyaan ke dalam file json === 
+def simpan_pertanyaan():
+    try:
+        with open("pertanyaan.json", "w") as file:
+            json.dump(questions, file, indent=4)
+        print("Pertanyaan berhasil disimpan ke pertanyaan.json.")
+    except Exception as e:
+        print(f"Terjadi kesalahan saat menyimpan pertanyaan: {e}")
+
+def muat_pertanyaan():
+    try:
+        with open("pertanyaan.json", "r") as file:
             global questions
             questions = json.load(file)
+        print("Pertanyaan berhasil dimuat dari pertanyaan.json.")
+    except FileNotFoundError:
+        print("File pertanyaan.json tidak ditemukan. Memulai dengan daftar kosong.")
+    except json.JSONDecodeError:
+        print("File pertanyaan.json rusak atau format tidak valid.")
+    except Exception as e:
+        print(f"Terjadi kesalahan saat memuat pertanyaan: {e}")
 
-def save_questions_to_file():
-    with open("questions.json", "w") as file:
-        json.dump(questions, file)
+# muat pertanyaan saat program dimulai
+muat_pertanyaan()
 
 # === Fungsi Menu ===
 def about_me():
@@ -159,6 +173,7 @@ def show_add_question_form(matkul, add_window, username):
                 'correct_answer': correct_answer
             }
             questions[matkul].append((username, question))
+            simpan_pertanyaan() #simpan pertanyaan setelah menambahkan
             msg.showinfo("Sukses", f"Soal pilihan berganda untuk {matkul} berhasil ditambahkan!")
             question_window.destroy()
         else:
