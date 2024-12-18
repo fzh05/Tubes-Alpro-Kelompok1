@@ -13,6 +13,8 @@ questions = {
     "Teori Peluang": []
 }
 
+users = {} #Menyimpan data user
+
 # === Fungsi untuk menyimpan pertanyaan ke dalam file json === 
 def save_question():
     try:
@@ -35,8 +37,31 @@ def load_question():
     except Exception as e:
         print(f"Terjadi kesalahan saat memuat pertanyaan: {e}")
 
+# === Fungsi untuk menyimpan dan memuat data user ===
+def save_users():
+    try:
+        with open("users.json", "w") as file:
+            json.dump(users, file, indent=4)
+        print("Data pengguna berhasil disimpan ke users.json.")
+    except Exception as e:
+        print(f"Terjadi kesalahan saat menyimpan data pengguna: {e}")
+
+def load_users():
+    try:
+        with open("users.json", "r") as file:
+            global users
+            users = json.load(file)
+        print("Data pengguna berhasil dimuat dari users.json.")
+    except FileNotFoundError:
+        print("File users.json tidak ditemukan. Memulai dengan daftar kosong.")
+    except json.JSONDecodeError:
+        print("File users.json rusak atau format tidak valid.")
+    except Exception as e:
+        print(f"Terjadi kesalahan saat memuat data pengguna: {e}")
+
 # muat pertanyaan saat program dimulai
 load_question()
+load_users()
 
 # === Fungsi Menu ===
 def about_me():
@@ -64,17 +89,74 @@ def exit_app():
         root.quit()
 
 # === Fungsi Login ===
+# === Fungsi untuk menyimpan dan memuat data user ===
+def save_users():
+    try:
+        with open("users.json", "w") as file:
+            json.dump(users, file, indent=4)
+        print("Data pengguna berhasil disimpan ke users.json.")
+    except Exception as e:
+        print(f"Terjadi kesalahan saat menyimpan data pengguna: {e}")
+
+def load_users():
+    try:
+        with open("users.json", "r") as file:
+            global users
+            users = json.load(file)
+        print("Data pengguna berhasil dimuat dari users.json.")
+    except FileNotFoundError:
+        print("File users.json tidak ditemukan. Memulai dengan daftar kosong.")
+    except json.JSONDecodeError:
+        print("File users.json rusak atau format tidak valid.")
+    except Exception as e:
+        print(f"Terjadi kesalahan saat memuat data pengguna: {e}")
+
+# === Fungsi Register ===
+def register():
+    def register_user():
+        username = entry_username.get()
+        password = entry_password.get()
+
+        if username in users:
+            msg.showerror("Register Error", "Username sudah terdaftar!")
+            return
+
+        if len(username) > 50 or len(password) < 4:
+            msg.showerror("Register Error", "Username tidak boleh lebih dari 50 karakter dan password minimal 4 karakter.")
+            return
+
+        users[username] = password
+        save_users()
+        msg.showinfo("Register Success", "Pendaftaran berhasil! Silakan login.")
+        register_window.destroy()
+
+    register_window = tk.Toplevel(root)
+    register_window.title("Register")
+    register_window.geometry("400x300")
+    register_window.config(bg="#081F5C")
+
+    tk.Label(register_window, text="Register", font=("Times New Roman", 24), bg="#081F5C", fg="#F7F2EB").pack(pady=20)
+
+    tk.Label(register_window, text="Username:", font=("Times New Roman", 14), bg="#081F5C", fg="#F7F2EB").pack(anchor="w", padx=20)
+    entry_username = tk.Entry(register_window, font=("Times New Roman", 14), width=30)
+    entry_username.pack(padx=20, pady=(0, 10))
+
+    tk.Label(register_window, text="Password:", font=("Times New Roman", 14), bg="#081F5C", fg="#F7F2EB").pack(anchor="w", padx=20)
+    entry_password = tk.Entry(register_window, font=("Times New Roman", 14), width=30, show="*")
+    entry_password.pack(padx=20, pady=(0, 10))
+
+    tk.Button(register_window, text="Register", command=register_user, font=("Times New Roman", 14), bg="#F7F2EB", fg="#081F5C").pack(pady=20)
 def login():
     username = entry_username.get()
     password = entry_password.get()
 
-    if username and len(username) <= 50 and password:
+    if username in users and users[username] == password:
         root.destroy()
         main_window(username)
-    elif len(username) > 50:
-        msg.showerror("Login Error", "Username must not exceed 50 characters!")
+    elif username not in users:
+        msg.showerror("Login Error", "Username tidak ditemukan! Silakan register terlebih dahulu.")
     else:
-        msg.showerror("Login Error", "Username or password cannot be empty!")
+        msg.showerror("Login Error", "Password salah! Silakan coba lagi.")
 
 # === Fungsi Main Window ===
 def main_window(username):
@@ -389,6 +471,12 @@ entry_password.pack(padx=20, pady=(0, 20))
 tk.Button(frame_login, text="LOGIN", command=login,
           font=("Times New Roman", 20, "bold"), bg="#081F5C", fg="white",
           width=12, height=1, relief="raised", bd=5).pack(pady=(10, 20))
+
+# Tombol Register
+tk.Button(frame_login, text="REGISTER", command=register,
+          font=("Times New Roman", 20, "bold"), bg="#081F5C", fg="white",
+          width=12, height=1, relief="raised", bd=5).pack(pady=(10, 20))
+
 
 # Menu Bar
 menubar = tk.Menu(root)
