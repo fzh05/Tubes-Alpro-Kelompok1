@@ -13,10 +13,8 @@ questions = {
     "Teori Peluang": []
 }
 
-users = {} #Menyimpan data user
-
 # === Fungsi untuk menyimpan pertanyaan ke dalam file json === 
-def save_question():
+def simpan_pertanyaan():
     try:
         with open("pertanyaan.json", "w") as file:
             json.dump(questions, file, indent=4)
@@ -24,7 +22,7 @@ def save_question():
     except Exception as e:
         print(f"Terjadi kesalahan saat menyimpan pertanyaan: {e}")
 
-def load_question():
+def muat_pertanyaan():
     try:
         with open("pertanyaan.json", "r") as file:
             global questions
@@ -37,31 +35,8 @@ def load_question():
     except Exception as e:
         print(f"Terjadi kesalahan saat memuat pertanyaan: {e}")
 
-# === Fungsi untuk menyimpan dan memuat data user ===
-def save_users():
-    try:
-        with open("users.json", "w") as file:
-            json.dump(users, file, indent=4)
-        print("Data pengguna berhasil disimpan ke users.json.")
-    except Exception as e:
-        print(f"Terjadi kesalahan saat menyimpan data pengguna: {e}")
-
-def load_users():
-    try:
-        with open("users.json", "r") as file:
-            global users
-            users = json.load(file)
-        print("Data pengguna berhasil dimuat dari users.json.")
-    except FileNotFoundError:
-        print("File users.json tidak ditemukan. Memulai dengan daftar kosong.")
-    except json.JSONDecodeError:
-        print("File users.json rusak atau format tidak valid.")
-    except Exception as e:
-        print(f"Terjadi kesalahan saat memuat data pengguna: {e}")
-
 # muat pertanyaan saat program dimulai
-load_question()
-load_users()
+muat_pertanyaan()
 
 # === Fungsi Menu ===
 def about_me():
@@ -88,64 +63,42 @@ def exit_app():
     if msg.askyesno("Exit", "Are you sure you want to exit?"):
         root.quit()
 
-# === Fungsi Login ===
-# === Fungsi untuk menyimpan dan memuat data user ===
-def save_users():
-    try:
-        with open("users.json", "w") as file:
-            json.dump(users, file, indent=4)
-        print("Data pengguna berhasil disimpan ke users.json.")
-    except Exception as e:
-        print(f"Terjadi kesalahan saat menyimpan data pengguna: {e}")
+users = {}  # Dictionary untuk menyimpan username dan password
 
-def load_users():
-    try:
-        with open("users.json", "r") as file:
-            global users
-            users = json.load(file)
-        print("Data pengguna berhasil dimuat dari users.json.")
-    except FileNotFoundError:
-        print("File users.json tidak ditemukan. Memulai dengan daftar kosong.")
-    except json.JSONDecodeError:
-        print("File users.json rusak atau format tidak valid.")
-    except Exception as e:
-        print(f"Terjadi kesalahan saat memuat data pengguna: {e}")
-
-# === Fungsi Register ===
+# Fungsi Registrasi
 def register():
-    def register_user():
-        username = entry_username.get()
-        password = entry_password.get()
+    def save_registration():
+        username = entry_register_username.get()
+        password = entry_register_password.get()
 
-        if username in users:
-            msg.showerror("Register Error", "Username sudah terdaftar!")
-            return
+        # Validasi input
+        if username and len(username) <= 50 and password:
+            if username in users:
+                msg.showerror("Error", "Username sudah terdaftar!")
+            else:
+                users[username] = password  # Menyimpan data user ke dictionary
+                msg.showinfo("Sukses", "Registrasi berhasil! Silakan login.")
+                register_window.destroy()
+        else:
+            msg.showerror("Error", "Username atau password tidak boleh kosong dan username tidak boleh lebih dari 50 karakter!")
 
-        if len(username) > 50 or len(password) < 4:
-            msg.showerror("Register Error", "Username tidak boleh lebih dari 50 karakter dan password minimal 4 karakter.")
-            return
-
-        users[username] = password
-        save_users()
-        msg.showinfo("Register Success", "Pendaftaran berhasil! Silakan login.")
-        register_window.destroy()
-
-    register_window = tk.Toplevel(root)
-    register_window.title("Register")
+    # Jendela registrasi
+    register_window = tk.Toplevel()
+    register_window.title("Registrasi Pengguna")
     register_window.geometry("400x300")
     register_window.config(bg="#081F5C")
 
-    tk.Label(register_window, text="Register", font=("Times New Roman", 24), bg="#081F5C", fg="#F7F2EB").pack(pady=20)
+    tk.Label(register_window, text="Username:", font=("Times New Roman", 14), bg="#081F5C", fg="#F7F2EB").pack(pady=10)
+    entry_register_username = tk.Entry(register_window, font=("Times New Roman", 14), width=30)
+    entry_register_username.pack(pady=10)
 
-    tk.Label(register_window, text="Username:", font=("Times New Roman", 14), bg="#081F5C", fg="#F7F2EB").pack(anchor="w", padx=20)
-    entry_username = tk.Entry(register_window, font=("Times New Roman", 14), width=30)
-    entry_username.pack(padx=20, pady=(0, 10))
+    tk.Label(register_window, text="Password:", font=("Times New Roman", 14), bg="#081F5C", fg="#F7F2EB").pack(pady=10)
+    entry_register_password = tk.Entry(register_window, font=("Times New Roman", 14), width=30, show="*")
+    entry_register_password.pack(pady=10)
 
-    tk.Label(register_window, text="Password:", font=("Times New Roman", 14), bg="#081F5C", fg="#F7F2EB").pack(anchor="w", padx=20)
-    entry_password = tk.Entry(register_window, font=("Times New Roman", 14), width=30, show="*")
-    entry_password.pack(padx=20, pady=(0, 10))
+    tk.Button(register_window, text="Daftar", font=("Times New Roman", 16), bg="#F7F2EB", fg="#081F5C", width=12, command=save_registration).pack(pady=20)
 
-    tk.Button(register_window, text="Register", command=register_user, font=("Times New Roman", 14), bg="#F7F2EB", fg="#081F5C").pack(pady=20)
+# Fungsi Login
 def login():
     username = entry_username.get()
     password = entry_password.get()
@@ -153,10 +106,23 @@ def login():
     if username in users and users[username] == password:
         root.destroy()
         main_window(username)
-    elif username not in users:
-        msg.showerror("Login Error", "Username tidak ditemukan! Silakan register terlebih dahulu.")
+    elif len(username) > 50:
+        msg.showerror("Login Error", "Username must not exceed 50 characters!")
     else:
-        msg.showerror("Login Error", "Password salah! Silakan coba lagi.")
+        msg.showerror("Login Error", "Username atau password salah!")
+
+# Fungsi Main Window
+def main_window(username):
+    window_main = tk.Tk()
+    window_main.title("Aplikasi Kuis")
+    window_main.geometry("600x400")
+    window_main.config(bg="#081F5C")
+
+    tk.Label(window_main, text=f"Selamat datang, {username}!", font=("Times New Roman", 18), bg="#081F5C", fg="#F7F2EB").pack(pady=20)
+
+    tk.Button(window_main, text="Logout", font=("Times New Roman", 16), bg="#F7F2EB", fg="#081F5C", command=window_main.quit).pack(pady=20)
+
+    window_main.mainloop()
 
 # === Fungsi Main Window ===
 def main_window(username):
@@ -219,7 +185,7 @@ def show_add_question_form(matkul, add_window, username):
     # Menampilkan form untuk menambahkan soal
     question_window = tk.Toplevel()
     question_window.title(f"Tambah Soal untuk {matkul}")
-    question_window.geometry("650x600")
+    question_window.geometry("500x450")
     question_window.config(bg="#081F5C")
 
     # Input untuk soal
@@ -255,7 +221,7 @@ def show_add_question_form(matkul, add_window, username):
                 'correct_answer': correct_answer
             }
             questions[matkul].append((username, question))
-            save_question() #simpan pertanyaan setelah menambahkan
+            simpan_pertanyaan() #simpan pertanyaan setelah menambahkan
             msg.showinfo("Sukses", f"Soal pilihan berganda untuk {matkul} berhasil ditambahkan!")
             question_window.destroy()
         else:
@@ -267,7 +233,7 @@ def show_add_question_form(matkul, add_window, username):
 def show_matkul_selection(window):
     matkul_window = tk.Toplevel(window)
     matkul_window.title("Pilih Mata Kuliah")
-    matkul_window.geometry("600x550")
+    matkul_window.geometry("500x400")
     matkul_window.config(bg="#081F5C")
 
     for matkul in questions.keys():
@@ -303,7 +269,7 @@ def delete_question(matkul, window):
 def confirm_delete(matkul, idx, delete_window):
     if msg.askyesno("Konfirmasi", "Apakah Anda yakin ingin menghapus soal ini?"):
         del questions[matkul][idx]
-        save_question()
+        save_questions_to_file()  # Simpan setelah menghapus soal
         msg.showinfo("Sukses", "Soal berhasil dihapus.")
         delete_window.destroy()
 
@@ -377,7 +343,7 @@ def edit_question_form(matkul, idx, edit_window):
                 'options': {'A': option_A, 'B': option_B, 'C': option_C, 'D': option_D},
                 'correct_answer': correct_answer
             })
-            save_question()
+            save_questions_to_file()  # Simpan setelah mengedit soal
             msg.showinfo("Sukses", "Soal berhasil diedit!")
             question_window.destroy()
         else:
@@ -468,15 +434,8 @@ entry_password = tk.Entry(frame_login, font=("Times New Roman", 18), width=25, s
 entry_password.pack(padx=20, pady=(0, 20))
 
 # Tombol LOGIN
-tk.Button(frame_login, text="LOGIN", command=login,
-          font=("Times New Roman", 20, "bold"), bg="#081F5C", fg="white",
-          width=12, height=1, relief="raised", bd=5).pack(pady=(10, 20))
-
-# Tombol Register
-tk.Button(frame_login, text="REGISTER", command=register,
-          font=("Times New Roman", 20, "bold"), bg="#081F5C", fg="white",
-          width=12, height=1, relief="raised", bd=5).pack(pady=(10, 20))
-
+tk.Button(frame_login, text="LOGIN", command=login, font=("Times New Roman", 20, "bold"), bg="#081F5C", fg="white", width=12, height=1, relief="raised", bd=5).pack(pady=(10, 20))
+tk.Button(frame_login, text="Register", command=register, font=("Times New Roman", 20, "bold"), bg="#081F5C", fg="white", width=12, height=1, relief="raised", bd=5).pack(pady=(10, 20))
 
 # Menu Bar
 menubar = tk.Menu(root)
