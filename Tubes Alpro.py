@@ -177,43 +177,6 @@ def show_matkul_selection(window):
         tk.Button(matkul_window, text=matkul, font=("Times New Roman", 24),
                   bg="#F7F2EB", fg="#081F5C", command=lambda m=matkul: start_quiz(m, matkul_window)).pack(pady=20)
 
-# Fungsi Mulai Kuis
-def start_quiz(matkul, window):
-    quiz_window = tk.Toplevel(window)
-    quiz_window.title(f"Kuis {matkul}")
-    quiz_window.geometry("500x400")
-    quiz_window.config(bg="#081F5C")
-    
-    question_index = 0
-    correct_answers = 0
-    total_questions = len(questions[matkul])
-    
-    def next_question():
-        nonlocal question_index
-        if question_index < total_questions:
-            question = questions[matkul][question_index][1]
-            tk.Label(quiz_window, text=f"{question['question']}", font=("Times New Roman", 16), bg="#081F5C", fg="#F7F2EB").pack(pady=20)
-            
-            for option, answer in question['options'].items():
-                tk.Button(quiz_window, text=f"{option}: {answer}", font=("Times New Roman", 16), 
-                          bg="#F7F2EB", fg="#081F5C", command=lambda ans=option: check_answer(ans, question['correct_answer'])).pack(pady=5)
-            question_index += 1
-        else:
-            show_score()
-
-    def check_answer(ans, correct_answer):
-        nonlocal correct_answers
-        if ans == correct_answer:
-            correct_answers += 1
-        next_question()
-
-    def show_score():
-        score = f"Your score: {correct_answers}/{total_questions}"
-        msg.showinfo("Kuis Selesai", score)
-        quiz_window.destroy()
-
-    next_question()
-
 # === Fungsi Hapus Soal ===
 def delete_question_menu(window):
     delete_window = tk.Toplevel(window)
@@ -325,6 +288,96 @@ def edit_question_form(matkul, idx, edit_window):
 
     tk.Button(question_window, text="Simpan", font=("Times New Roman", 16), bg="#F7F2EB", fg="#081F5C", width=10, command=save_edit).pack(pady=20)
 
+# ==== Fungsi untuk memulai kuis ====
+def start_quiz(matkul, window):
+    # Membuka jendela baru untuk kuis
+    quiz_window = tk.Toplevel(window)
+    quiz_window.title(f"Kuis {matkul}")
+    quiz_window.geometry("600x500")
+    quiz_window.config(bg="#081F5C")
+    
+    # Variabel untuk melacak indeks pertanyaan dan skor
+    question_index = 0
+    correct_answers = 0
+    total_questions = len(questions[matkul])
+    
+    # Jika tidak ada soal untuk mata kuliah yang dipilih, tampilkan pesan error
+    if total_questions == 0:
+        msg.showerror("Error", f"Tidak ada soal untuk mata kuliah {matkul}!")
+        quiz_window.destroy()
+        return
+
+    # Membuat frame untuk menampilkan pertanyaan
+    frame_question = tk.Frame(quiz_window, bg="#081F5C")
+    frame_question.pack(pady=20)
+
+    # Membuat frame untuk menampilkan tombol pilihan jawaban
+    frame_answers = tk.Frame(quiz_window, bg="#081F5C")
+    frame_answers.pack(pady=10)
+
+    # Fungsi untuk memuat pertanyaan ke frame
+    def load_question():
+        nonlocal question_index  # Mengakses variabel question_index dari scope luar
+
+        # Menghapus widget lama sebelum memuat pertanyaan baru
+        for widget in frame_question.winfo_children():
+            widget.destroy()
+        for widget in frame_answers.winfo_children():
+            widget.destroy()
+
+        # Jika masih ada pertanyaan yang tersisa
+        if question_index < total_questions:
+            # Mengambil data pertanyaan saat ini
+            question_data = questions[matkul][question_index][1]
+
+            # Menampilkan nomor dan teks pertanyaan
+            tk.Label(frame_question, text=f"Pertanyaan {question_index + 1}/{total_questions}",
+                     font=("Times New Roman", 14), bg="#081F5C", fg="#F7F2EB").pack()
+            tk.Label(frame_question, text=question_data['question'],
+                     font=("Times New Roman", 16, "bold"), bg="#081F5C", fg="#F7F2EB", wraplength=500).pack(pady=10)
+
+            # Membuat tombol untuk setiap pilihan jawaban
+            for option, answer_text in question_data['options'].items():
+                button = tk.Button(frame_answers, text=f"{option}: {answer_text}",
+                                   font=("Times New Roman", 14), bg="#F7F2EB", fg="#081F5C", width=30)
+                # Mengatur fungsi command untuk memeriksa jawaban
+                button.config(command=lambda opt=option: check_answer(opt, question_data['correct_answer']))
+                button.pack(pady=5)
+        else:
+            # Jika pertanyaan habis, tampilkan skor
+            show_score()
+
+    # Fungsi untuk memeriksa jawaban pengguna
+    def check_answer(selected_option, correct_option):
+        nonlocal question_index, correct_answers  # Mengakses variabel dari scope luar
+
+        # Jika jawaban benar, tambahkan skor
+        if selected_option == correct_option:
+            correct_answers += 1
+
+        # Lanjutkan ke pertanyaan berikutnya
+        question_index += 1
+        load_question()
+
+    # Fungsi untuk menampilkan skor akhir
+    def show_score():
+        # Menghapus widget lama sebelum menampilkan skor
+        for widget in frame_question.winfo_children():
+            widget.destroy()
+        for widget in frame_answers.winfo_children():
+            widget.destroy()
+
+        # Menampilkan skor pengguna
+        score_text = f"Skor Anda: {correct_answers}/{total_questions}"
+        tk.Label(frame_question, text=score_text, font=("Times New Roman", 20, "bold"),
+                 bg="#081F5C", fg="white").pack(pady=20)
+
+        # Menambahkan tombol untuk keluar dari kuis
+        tk.Button(frame_question, text="Keluar", font=("Times New Roman", 16), bg="#FF4500", fg="white",
+                  command=quiz_window.destroy).pack(pady=10)
+
+    # Memuat pertanyaan pertama
+    load_question()
 
 
 # Jendela Login
