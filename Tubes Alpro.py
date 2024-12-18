@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox as msg
 
-
 # Menyimpan soal berdasarkan mata kuliah
 questions = {
     "Alpro": [],
@@ -28,7 +27,6 @@ def simpan_pertanyaan():
         print("Pertanyaan berhasil disimpan ke pertanyaan.txt.")
     except Exception as e:
         print(f"Terjadi kesalahan saat menyimpan pertanyaan: {e}")
-
 
 # === Fungsi untuk memuat pertanyaan dari file teks ===
 def muat_pertanyaan():
