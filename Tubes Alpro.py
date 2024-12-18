@@ -12,32 +12,69 @@ questions = {
     "Teori Peluang": []
 }
 
-# === Fungsi untuk menyimpan pertanyaan ke dalam file json === 
 # === Fungsi untuk menyimpan pertanyaan ke dalam file teks === 
-def save_question_txt():
+def simpan_pertanyaan():
     try:
         with open("pertanyaan.txt", "w") as file:
-            for question in questions:
-                file.write(question + "\n")
+            for matkul, soal_list in questions.items():
+                for username, soal in soal_list:
+                    file.write(f"Mata Kuliah: {matkul}\n")
+                    file.write(f"Penulis: {username}\n")
+                    file.write(f"Soal: {soal['question']}\n")
+                    file.write("Pilihan:\n")
+                    for option, text in soal['options'].items():
+                        file.write(f"  {option}. {text}\n")
+                    file.write(f"Jawaban Benar: {soal['correct_answer']}\n\n")
         print("Pertanyaan berhasil disimpan ke pertanyaan.txt.")
     except Exception as e:
         print(f"Terjadi kesalahan saat menyimpan pertanyaan: {e}")
 
+
 # === Fungsi untuk memuat pertanyaan dari file teks ===
-def load_question_txt():
+def muat_pertanyaan():
     try:
+        global questions
+        questions = {matkul: [] for matkul in questions.keys()}  # Reset data
         with open("pertanyaan.txt", "r") as file:
-            global questions
-            questions = [line.strip() for line in file.readlines()]
+            lines = file.readlines()
+            current_matkul = None
+            username = None
+            question_text = None
+            options = {}
+            correct_answer = None
+            for line in lines:
+                line = line.strip()
+                if line.startswith("Mata Kuliah:"):
+                    current_matkul = line.split(":")[1].strip()
+                elif line.startswith("Penulis:"):
+                    username = line.split(":")[1].strip()
+                elif line.startswith("Soal:"):
+                    question_text = line.split(":")[1].strip()
+                elif line.startswith("Pilihan:"):
+                    options = {}
+                elif line.startswith("  "):  # Pilihan jawaban
+                    option = line[0]
+                    text = line[3:].strip()
+                    options[option] = text
+                elif line.startswith("Jawaban Benar:"):
+                    correct_answer = line.split(":")[1].strip()
+                    if current_matkul:
+                        new_question = {
+                            "question": question_text,
+                            "options": options,
+                            "correct_answer": correct_answer
+                        }
+                        # Periksa jika soal sudah ada
+                        if new_question not in [q[1] for q in questions[current_matkul]]:
+                            questions[current_matkul].append((username, new_question))
         print("Pertanyaan berhasil dimuat dari pertanyaan.txt.")
     except FileNotFoundError:
         print("File pertanyaan.txt tidak ditemukan. Memulai dengan daftar kosong.")
-        questions = []
     except Exception as e:
         print(f"Terjadi kesalahan saat memuat pertanyaan: {e}")
 
 # muat pertanyaan saat program dimulai
-load_question_txt()
+muat_pertanyaan()
 
 # === Fungsi Menu ===
 def about_me():
@@ -216,13 +253,19 @@ def show_add_question_form(matkul, add_window, username):
 
         # Validasi input
         if question_text and option_A and option_B and option_C and option_D and correct_answer in ['A', 'B', 'C', 'D']:
-            question = {
+            new_question = {
                 'question': question_text,
                 'options': {'A': option_A, 'B': option_B, 'C': option_C, 'D': option_D},
                 'correct_answer': correct_answer
             }
-            questions[matkul].append((username, question))
-            save_question()
+
+            #Cegah duplikasi soal
+            if new_question in [q[1] for q in questions[matkul]]:
+                msg.showerror("Error", "Soal sudah ada di database!")
+                return
+            
+            questions[matkul].append((username, new_question))
+            simpan_pertanyaan()
             msg.showinfo("Sukses", f"Soal pilihan berganda untuk {matkul} berhasil ditambahkan!")
             question_window.destroy()
         else:
@@ -270,7 +313,7 @@ def delete_question(matkul, window):
 def confirm_delete(matkul, idx, delete_window):
     if msg.askyesno("Konfirmasi", "Apakah Anda yakin ingin menghapus soal ini?"):
         del questions[matkul][idx]
-        save_question()
+        simpan_pertanyaan()
         msg.showinfo("Sukses", "Soal berhasil dihapus.")
         delete_window.destroy()
 
@@ -344,7 +387,7 @@ def edit_question_form(matkul, idx, edit_window):
                 'options': {'A': option_A, 'B': option_B, 'C': option_C, 'D': option_D},
                 'correct_answer': correct_answer
             })
-            save_question()
+            simpan_pertanyaan()
             msg.showinfo("Sukses", "Soal berhasil diedit!")
             question_window.destroy()
         else:
