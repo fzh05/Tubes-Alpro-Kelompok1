@@ -14,7 +14,7 @@ questions = {
 }
 
 # === Fungsi untuk menyimpan pertanyaan ke dalam file json === 
-def simpan_pertanyaan():
+def save_question():
     try:
         with open("pertanyaan.json", "w") as file:
             json.dump(questions, file, indent=4)
@@ -22,7 +22,7 @@ def simpan_pertanyaan():
     except Exception as e:
         print(f"Terjadi kesalahan saat menyimpan pertanyaan: {e}")
 
-def muat_pertanyaan():
+def load_question():
     try:
         with open("pertanyaan.json", "r") as file:
             global questions
@@ -36,7 +36,7 @@ def muat_pertanyaan():
         print(f"Terjadi kesalahan saat memuat pertanyaan: {e}")
 
 # muat pertanyaan saat program dimulai
-muat_pertanyaan()
+load_question()
 
 # === Fungsi Menu ===
 def about_me():
@@ -173,7 +173,7 @@ def show_add_question_form(matkul, add_window, username):
                 'correct_answer': correct_answer
             }
             questions[matkul].append((username, question))
-            simpan_pertanyaan() #simpan pertanyaan setelah menambahkan
+            save_question #simpan pertanyaan setelah menambahkan
             msg.showinfo("Sukses", f"Soal pilihan berganda untuk {matkul} berhasil ditambahkan!")
             question_window.destroy()
         else:
@@ -221,7 +221,7 @@ def delete_question(matkul, window):
 def confirm_delete(matkul, idx, delete_window):
     if msg.askyesno("Konfirmasi", "Apakah Anda yakin ingin menghapus soal ini?"):
         del questions[matkul][idx]
-        save_questions_to_file()  # Simpan setelah menghapus soal
+        save_question()
         msg.showinfo("Sukses", "Soal berhasil dihapus.")
         delete_window.destroy()
 
@@ -295,7 +295,7 @@ def edit_question_form(matkul, idx, edit_window):
                 'options': {'A': option_A, 'B': option_B, 'C': option_C, 'D': option_D},
                 'correct_answer': correct_answer
             })
-            save_questions_to_file()  # Simpan setelah mengedit soal
+            save_question()
             msg.showinfo("Sukses", "Soal berhasil diedit!")
             question_window.destroy()
         else:
