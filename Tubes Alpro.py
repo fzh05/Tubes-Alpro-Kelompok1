@@ -189,21 +189,42 @@ def start_quiz(matkul, window):
 
     next_question()
 
-# === Program Utama ===
+
+# Jendela Login
 root = tk.Tk()
-root.title("Login to Kuis")
-root.geometry("400x300")
-root.config(bg="#081F5C")
+root.title("QUIZ BY KELOMPOK 1 RC")
+root.geometry("1000x600")
+root.configure(bg="#081F5C")
 
-# Input Login
-tk.Label(root, text="Username:", font=("Times New Roman", 14), bg="#081F5C", fg="#F7F2EB").pack(pady=10)
-entry_username = tk.Entry(root, font=("Times New Roman", 14))
-entry_username.pack(pady=10)
+frame_login = tk.Frame(root, bg="#F7F2EB", bd=5, relief="ridge")
+frame_login.place(relx=0.5, rely=0.5, anchor="center")
 
-tk.Label(root, text="Password:", font=("Times New Roman", 14), bg="#081F5C", fg="#F7F2EB").pack(pady=10)
-entry_password = tk.Entry(root, font=("Times New Roman", 14), show="*")
-entry_password.pack(pady=10)
+# Judul LOGIN
+tk.Label(frame_login, text="LOGIN", font=("Times New Roman", 36, "bold"), bg="#F7F2EB").pack(pady=(10, 20))
 
-tk.Button(root, text="Login", font=("Times New Roman", 16), bg="#F7F2EB", fg="#081F5C", width=10, command=login).pack(pady=20)
+# Label Username
+tk.Label(frame_login, text="Username:", font=("Times New Roman", 18), bg="#F7F2EB").pack(anchor="w", padx=20)
+entry_username = tk.Entry(frame_login, font=("Times New Roman", 18), width=25, relief="solid", bd=2)
+entry_username.pack(padx=20, pady=(0, 10))
+
+# Label Password
+tk.Label(frame_login, text="Password:", font=("Times New Roman", 18), bg="#F7F2EB").pack(anchor="w", padx=20)
+entry_password = tk.Entry(frame_login, font=("Times New Roman", 18), width=25, show="*", relief="solid", bd=2)
+entry_password.pack(padx=20, pady=(0, 20))
+
+# Tombol LOGIN
+tk.Button(frame_login, text="LOGIN", command=login,
+          font=("Times New Roman", 20, "bold"), bg="#081F5C", fg="white",
+          width=12, height=1, relief="raised", bd=5).pack(pady=(10, 20))
+
+# Menu Bar
+menubar = tk.Menu(root)
+root.config(menu=menubar)
+menu_file = tk.Menu(menubar, tearoff=0)
+menu_file.add_command(label="About", command=about_me)
+menu_file.add_command(label="Send Feedback", command=send_feedback)
+menu_file.add_separator()
+menu_file.add_command(label="Exit", command=exit_app)
+menubar.add_cascade(label="Menu", menu=menu_file)
 
 root.mainloop()
