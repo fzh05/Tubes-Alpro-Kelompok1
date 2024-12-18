@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox as msg
+import json #JavaScript Object Notation (buat  format data yang lebih mudah dibaca)
+import os 
 
 # Menyimpan soal berdasarkan mata kuliah
 questions = {
@@ -10,6 +12,17 @@ questions = {
     "Struktur Data": [],
     "Teori Peluang": []
 }
+
+# === Fungsi untuk Load dan Save Soal ke File JSON ===
+def load_questions_from_file():
+    if os.path.exists("questions.json"):
+        with open("questions.json", "r") as file:
+            global questions
+            questions = json.load(file)
+
+def save_questions_to_file():
+    with open("questions.json", "w") as file:
+        json.dump(questions, file)
 
 # === Fungsi Menu ===
 def about_me():
@@ -73,6 +86,18 @@ def main_window(username):
               command=window_main.quit, 
               font=("Times New Roman", 21), bg="#F7F2EB", fg="#081F5C",
               width=14, height=2, relief="raised", bd=8).pack(pady=20)
+    
+    # Tombol kecil untuk Hapus dan Edit di pojok kanan bawah
+    frame_bottom = tk.Frame(window_main, bg="#081F5C")
+    frame_bottom.pack(side="bottom", anchor="se", padx=20, pady=20)
+
+    btn_edit = tk.Button(frame_bottom, text="Edit Soal", command=lambda: edit_question_menu(window_main),
+                         font=("Times New Roman", 12), bg="#FFD700", fg="#081F5C", width=10, relief="raised", bd=3)
+    btn_edit.grid(row=0, column=0, padx=5)
+
+    btn_delete = tk.Button(frame_bottom, text="Hapus Soal", command=lambda: delete_question_menu(window_main),
+                           font=("Times New Roman", 12), bg="#FF4500", fg="white", width=10, relief="raised", bd=3)
+    btn_delete.grid(row=0, column=1, padx=5)
 
     window_main.mainloop()
 
@@ -188,6 +213,118 @@ def start_quiz(matkul, window):
         quiz_window.destroy()
 
     next_question()
+
+# === Fungsi Hapus Soal ===
+def delete_question_menu(window):
+    delete_window = tk.Toplevel(window)
+    delete_window.title("Hapus Soal")
+    delete_window.geometry("400x300")
+    delete_window.config(bg="#081F5C")
+
+    for matkul in questions.keys():
+        tk.Button(delete_window, text=f"Hapus Soal {matkul}", font=("Times New Roman", 16), 
+                  bg="#F7F2EB", fg="#081F5C", command=lambda m=matkul: delete_question(m, delete_window)).pack(pady=10)
+
+def delete_question(matkul, window):
+    delete_window = tk.Toplevel(window)
+    delete_window.title(f"Hapus Soal {matkul}")
+    delete_window.geometry("400x300")
+    delete_window.config(bg="#081F5C")
+
+    if not questions[matkul]:
+        msg.showerror("Error", f"Tidak ada soal untuk mata kuliah {matkul}")
+        delete_window.destroy()
+        return
+
+    for i, (author, question) in enumerate(questions[matkul]):
+        tk.Button(delete_window, text=f"{i+1}. {question['question'][:30]}...", font=("Times New Roman", 14), 
+                  bg="#F7F2EB", fg="#081F5C", command=lambda idx=i: confirm_delete(matkul, idx, delete_window)).pack(pady=5)
+
+def confirm_delete(matkul, idx, delete_window):
+    if msg.askyesno("Konfirmasi", "Apakah Anda yakin ingin menghapus soal ini?"):
+        del questions[matkul][idx]
+        save_questions_to_file()  # Simpan setelah menghapus soal
+        msg.showinfo("Sukses", "Soal berhasil dihapus.")
+        delete_window.destroy()
+
+# === Fungsi Edit Soal ===
+def edit_question_menu(window):
+    edit_window = tk.Toplevel(window)
+    edit_window.title("Edit Soal")
+    edit_window.geometry("400x300")
+    edit_window.config(bg="#081F5C")
+
+    for matkul in questions.keys():
+        tk.Button(edit_window, text=f"Edit Soal {matkul}", font=("Times New Roman", 16),
+                  bg="#F7F2EB", fg="#081F5C", command=lambda m=matkul: edit_question(m, edit_window)).pack(pady=10)
+
+def edit_question(matkul, window):
+    edit_window = tk.Toplevel(window)
+    edit_window.title(f"Edit Soal {matkul}")
+    edit_window.geometry("500x400")
+    edit_window.config(bg="#081F5C")
+
+    if not questions[matkul]:
+        msg.showerror("Error", f"Tidak ada soal untuk mata kuliah {matkul}")
+        edit_window.destroy()
+        return
+
+    for i, (author, question) in enumerate(questions[matkul]):
+        tk.Button(edit_window, text=f"{i+1}. {question['question'][:30]}...", font=("Times New Roman", 14),
+                  bg="#F7F2EB", fg="#081F5C",
+                  command=lambda idx=i: edit_question_form(matkul, idx, edit_window)).pack(pady=5)
+
+def edit_question_form(matkul, idx, edit_window):
+    edit_window.destroy()
+    question_window = tk.Toplevel()
+    question_window.title(f"Edit Soal untuk {matkul}")
+    question_window.geometry("400x400")
+    question_window.config(bg="#081F5C")
+
+    question = questions[matkul][idx][1]
+
+    # Input untuk soal
+    tk.Label(question_window, text="Soal:", font=("Times New Roman", 14), bg="#081F5C", fg="#F7F2EB").pack(pady=10)
+    entry_question = tk.Entry(question_window, font=("Times New Roman", 14), width=30)
+    entry_question.insert(0, question['question'])
+    entry_question.pack(pady=10)
+
+    # Input untuk pilihan
+    options = {}
+    for option in ['A', 'B', 'C', 'D']:
+        tk.Label(question_window, text=f"Option {option}:", font=("Times New Roman", 14), bg="#081F5C", fg="#F7F2EB").pack(pady=5)
+        options[option] = tk.Entry(question_window, font=("Times New Roman", 14), width=30)
+        options[option].insert(0, question['options'][option])
+        options[option].pack(pady=5)
+
+    # Input untuk jawaban yang benar
+    tk.Label(question_window, text="Correct Answer (A/B/C/D):", font=("Times New Roman", 14), bg="#081F5C", fg="#F7F2EB").pack(pady=10)
+    entry_correct_answer = tk.Entry(question_window, font=("Times New Roman", 14), width=30)
+    entry_correct_answer.insert(0, question['correct_answer'])
+    entry_correct_answer.pack(pady=10)
+
+    def save_edit():
+        question_text = entry_question.get()
+        option_A = options['A'].get()
+        option_B = options['B'].get()
+        option_C = options['C'].get()
+        option_D = options['D'].get()
+        correct_answer = entry_correct_answer.get().upper()
+
+        if question_text and option_A and option_B and option_C and option_D and correct_answer in ['A', 'B', 'C', 'D']:
+            questions[matkul][idx] = (questions[matkul][idx][0], {
+                'question': question_text,
+                'options': {'A': option_A, 'B': option_B, 'C': option_C, 'D': option_D},
+                'correct_answer': correct_answer
+            })
+            save_questions_to_file()  # Simpan setelah mengedit soal
+            msg.showinfo("Sukses", "Soal berhasil diedit!")
+            question_window.destroy()
+        else:
+            msg.showerror("Error", "Semua kolom harus diisi dan jawaban yang benar harus A, B, C, atau D!")
+
+    tk.Button(question_window, text="Simpan", font=("Times New Roman", 16), bg="#F7F2EB", fg="#081F5C", width=10, command=save_edit).pack(pady=20)
+
 
 
 # Jendela Login
