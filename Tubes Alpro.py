@@ -303,13 +303,17 @@ def edit_question_form(matkul, idx, edit_window):
 
     tk.Button(question_window, text="Simpan", font=("Times New Roman", 16), bg="#F7F2EB", fg="#081F5C", width=10, command=save_edit).pack(pady=20)
 
-# ==== Fungsi untuk memulai kuis ====
+# === Fungsi untuk memulai kuis ===
 def start_quiz(matkul, window):
     # Membuka jendela baru untuk kuis
     quiz_window = tk.Toplevel(window)
     quiz_window.title(f"Kuis {matkul}")
     quiz_window.geometry("600x500")
     quiz_window.config(bg="#081F5C")
+    
+    # Menampilkan pesan awal
+    tk.Label(quiz_window, text="Selamat datang di Kuis Sains Data!",
+             font=("Times New Roman", 20, "bold"), bg="#081F5C", fg="white").pack(pady=20)
     
     total_questions = len(questions[matkul])
     correct_answers = [0]  # Menggunakan list untuk membuatnya mutable dalam rekursi
@@ -324,11 +328,14 @@ def start_quiz(matkul, window):
         # Bersihkan widget sebelumnya
         for widget in quiz_window.winfo_children():
             widget.destroy()
-        
+
         # Jika indeks melampaui total pertanyaan, tampilkan skor
         if question_index >= total_questions:
             tk.Label(quiz_window, text=f"Skor Anda: {correct_answers[0]}/{total_questions}",
                      font=("Times New Roman", 20, "bold"), bg="#081F5C", fg="white").pack(pady=20)
+            # Tambahkan ucapan terima kasih setelah kuis selesai
+            tk.Label(quiz_window, text="Terimakasih telah menyelesaikan kuis dengan jujur.",
+                     font=("Times New Roman", 16, "italic"), bg="#081F5C", fg="white").pack(pady=20)
             tk.Button(quiz_window, text="Keluar", font=("Times New Roman", 16), bg="#FF4500", fg="white",
                       command=quiz_window.destroy).pack(pady=10)
             return
@@ -355,8 +362,6 @@ def start_quiz(matkul, window):
 
     # Muat pertanyaan pertama
     load_question()
-
-
 
 # Jendela Login
 root = tk.Tk()
