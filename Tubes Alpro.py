@@ -173,7 +173,7 @@ def show_add_question_form(matkul, add_window, username):
                 'correct_answer': correct_answer
             }
             questions[matkul].append((username, question))
-            save_question #simpan pertanyaan setelah menambahkan
+            save_question() #simpan pertanyaan setelah menambahkan
             msg.showinfo("Sukses", f"Soal pilihan berganda untuk {matkul} berhasil ditambahkan!")
             question_window.destroy()
         else:
