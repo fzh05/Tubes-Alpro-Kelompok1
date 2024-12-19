@@ -1,16 +1,42 @@
 import tkinter as tk
 from tkinter import messagebox as msg
 
-
 # Menyimpan soal berdasarkan mata kuliah
 questions = {
-    "Alpro": [],
+    "Alpro": [
+        ("admin", {
+            "question": "Apa nama struktur data yang menggunakan prinsip \"First In First Out (FIFO)\"?",
+            "options": {"A": "Stack", "B": "Queue", "C": "Array", "D": "Linked List"},
+            "correct_answer": "B"
+        }),
+        ("admin", {
+            "question": "Dalam Python, bagaimana cara mendeklarasikan sebuah fungsi?",
+            "options": {"A": "function myFunction()", "B": "def myFunction():", "C": "create myFunction():", "D": "func myFunction()"},
+            "correct_answer": "B"
+        }),
+        ("admin", {
+            "question": "Apa operator yang digunakan untuk mengecek kesamaan dua nilai dalam Python?",
+            "options": {"A": "=", "B": "==", "C": "===", "D": "!="},
+            "correct_answer": "B"
+        }),
+        ("admin", {
+            "question": "Apa fungsi dari break dalam sebuah loop?",
+            "options": {"A": "Mengulang loop dari awal", "B": "Keluar dari loop saat itu juga", "C": "Melewati iterasi saat ini", "D": "Menghapus loop"},
+            "correct_answer": "B"
+        }),
+        ("admin", {
+            "question": "Mana yang termasuk bahasa pemrograman tingkat tinggi?",
+            "options": {"A": "Assembly", "B": "C++", "C": "Machine Code", "D": "Binary"},
+            "correct_answer": "B"
+        })
+    ],
     "ADS": [],
     "LMD": [],
     "ALE": [],
     "Struktur Data": [],
     "Teori Peluang": []
 }
+
 
 # === Fungsi untuk menyimpan pertanyaan ke dalam file teks === 
 def simpan_pertanyaan():
@@ -73,8 +99,6 @@ def muat_pertanyaan():
     except Exception as e:
         print(f"Terjadi kesalahan saat memuat pertanyaan: {e}")
 
-# muat pertanyaan saat program dimulai
-muat_pertanyaan()
 
 # === Fungsi Menu ===
 def about_me():
