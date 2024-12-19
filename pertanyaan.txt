@@ -1,0 +1,97 @@
+Mata Kuliah: Alpro
+Penulis: afifah
+Soal: apa singkatan GUI
+Pilihan:
+A. General User Integration
+B. Graphical Unit Identifier
+C. General Unit Interface
+D. Graphical User Interface
+Jawaban Benar: D
+
+Mata Kuliah: Alpro
+Penulis: afifah
+Soal: Apa yang dimaksud dengan algoritma?
+Pilihan:
+Jawaban Benar: B
+
+Mata Kuliah: Alpro
+Penulis: afifah
+Soal: Apa fungsi utama dari pernyataan if dalam pemrograman?
+Pilihan:
+Jawaban Benar: C
+
+Mata Kuliah: Alpro
+Penulis: afifah
+Soal: Manakah yang merupakan operator logika dalam pemrograman?
+Pilihan:
+Jawaban Benar: A
+
+Mata Kuliah: Alpro
+Penulis: afifah
+Soal: Apa output dari perintah print(2 + 3 * 4) dalam Python?
+Pilihan:
+A. =
+B. &&
+C. 0
+D. @
+Jawaban Benar: B
+
+Mata Kuliah: Alpro
+Penulis: afifah
+Soal: Tipe data mana yang digunakan untuk menyimpan bilangan pecahan?
+Pilihan:
+A. Integer
+B. String
+C. Float 
+D. Boolean
+Jawaban Benar: C
+
+Mata Kuliah: Alpro
+Penulis: afifah
+Soal: Manakah di bawah ini yang bukan merupakan bahasa pemrograman?
+Pilihan:
+A. Python
+B. Java
+C. C++
+D. HTML
+Jawaban Benar: D
+
+Mata Kuliah: Alpro
+Penulis: afifah
+Soal: Apa yang dimaksud dengan debugging?
+Pilihan:
+A. Proses menemukan dan memperbaiki kesalahan dalam kode
+B. Proses kompilasi program menjadi file eksekusi
+C. Proses menghubungkan database ke aplikasi
+D. Proses mendesain antarmuka pengguna
+Jawaban Benar: A
+
+Mata Kuliah: Alpro
+Penulis: afifah
+Soal: Apa kegunaan dari fungsi len() dalam Python?
+Pilihan:
+A. Mengubah tipe data menjadi integer
+B. Menghitung panjang dari sebuah objek (seperti string, list) 
+C. Menambahkan elemen baru ke dalam list
+D. Menghapus elemen dari list
+Jawaban Benar: B
+
+Mata Kuliah: Alpro
+Penulis: afifah
+Soal: Manakah tipe data yang digunakan untuk menyimpan nilai "True" atau "False"?
+Pilihan:
+A. String
+B. Integer
+C. Boolean
+D. Float
+Jawaban Benar: C
+
+Mata Kuliah: Alpro
+Penulis: afifah
+Soal: Apa output dari perintah print(2 + 3 * 4) dalam Python?
+Pilihan :
+A. 20
+B. 14 
+C. 24
+D. 18
+Jawaban Benar : B

@@ -1,0 +1,144 @@
+import tkinter as tk
+from tkinter import messagebox
+import pandas as pd
+from datetime import datetime
+
+class Quiz:
+    def __init__(self, root, pertanyaan, username):
+        self.root = root
+        self.pertanyaan = pertanyaan
+        self.username = username
+        self.jawaban = []
+        self.submitted = False
+        self.create_ui()
+
+    def create_ui(self):
+        self.frame = tk.Frame(self.root)
+        self.frame.pack()
+
+        self.label_title = tk.Label(self.frame, text="Mental Health Quiz", font=("Arial", 16))
+        self.label_title.grid(row=0, column=0, columnspan=2, pady=10)
+
+        self.pertanyaan_widgets = []
+
+        for i, pertanyaan_item in enumerate(self.pertanyaan):
+            label = tk.Label(self.frame, text=f"Pertanyaan {i + 1}: {pertanyaan_item}")
+            label.grid(row=i+1, column=0, sticky="w", pady=5)
+
+            var = tk.IntVar(value=0)
+            self.pertanyaan_widgets.append((label, var))
+
+            yes_button = tk.Radiobutton(self.frame, text="Ya", variable=var, value=1)
+            yes_button.grid(row=i+1, column=1, padx=10)
+
+            no_button = tk.Radiobutton(self.frame, text="Tidak", variable=var, value=0)
+            no_button.grid(row=i+1, column=2)
+
+        self.submit_button = tk.Button(self.frame, text="Submit", command=self.submit)
+        self.submit_button.grid(row=len(self.pertanyaan)+1, column=0, columnspan=3, pady=20)
+
+    def submit(self):
+        if not self.submitted:
+            for var in self.pertanyaan_widgets:
+                self.jawaban.append(var[1].get())
+
+            if sum(self.jawaban) == 0:
+                messagebox.showwarning("Warning", "Isi jawaban dengan benar!")
+                return
+
+            self.jawaban_user(self.username, self.jawaban)
+            self.show_results()
+            self.submitted = True
+        else:
+            messagebox.showinfo("Info", "Anda sudah submit jawaban!")
+
+    def jawaban_user(self, username, jawaban):
+        try:
+            data_jawaban = pd.read_csv("jawaban_user.csv")
+        except FileNotFoundError:
+            data_jawaban = pd.DataFrame(columns=["username", "jawaban", "rata_rata_jawaban", "tanggal_waktu"])
+
+        df_jawaban = pd.DataFrame({
+            "username": [username],
+            "jawaban": [jawaban],
+            "rata_rata_jawaban": [self.hasil()],
+            "tanggal_waktu": [self.waktu()],
+        })
+
+        data_jawaban = pd.concat([data_jawaban, df_jawaban], ignore_index=True)
+        data_jawaban.to_csv("jawaban_user.csv", index=False)
+
+    def hasil(self):
+        rata_rata = sum(self.jawaban) / len(self.pertanyaan)
+        return rata_rata
+
+    def waktu(self):
+        return datetime.now()
+
+    def show_results(self):
+        poin = self.hasil()
+        result = f"Poin Anda: {poin:.1f}\n"
+
+        if poin >= 1 and poin <= 3.9:
+            result += "Anda sedang baik-baik saja"
+        elif poin >= 4 and poin <= 6.9:
+            result += "Anda sedang jenuh"
+        else:
+            result += "Anda sedang stress"
+
+        messagebox.showinfo("Hasil Quiz", result)
+
+        self.saran(poin)
+
+    def saran(self, poin):
+        if poin >= 1 and poin <= 3.9:
+            saran = """
+            Normal: Menjaga pola hidup sehat, tidur cukup.
+            Kegiatan yang dapat dilakukan:
+            1. Katakan Hal Positif pada Diri Sendiri
+            2. Fokus pada Satu Hal pada Satu Waktu
+            3. Olahraga
+            """
+        elif poin >= 4 and poin <= 6.9:
+            saran = """
+            Jenuh: istirahat, mencari kesibukan, bertemu teman, jalan jalan
+            Kegiatan yang dapat dilakukan:
+            1. Memaknai Kembali Pekerjaan yang Dilakukan
+            2. Mendengarkan Musik
+            3. Menata Ruang Kerja
+            """
+        else:
+            saran = """
+            Stress: istirahat, makan cukup, konsultasi pada pihak profesional
+            Kegiatan yang dapat dilakukan:
+            1. Bicarakan keluhan dengan seseorang yang dapat dipercaya
+            2. Melakukan kegiatan yang sesuai dengan minat dan kemampuan
+            3. Kembangkan hobi yang bermanfaat
+            """
+        
+        messagebox.showinfo("Saran", saran)
+
+# Main Program
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.title("Quiz")
+
+    # Username
+    username = "user_example"  # Replace with actual username or login system
+
+    pertanyaan = [
+        "Apakah Anda merasa tidak baik-baik saja selama ini?",
+        "Apakah Anda merasa tidak percaya diri dengan semua Anda sekarang?",
+        "Apakah Anda merasa dipengaruhi oleh perasaan gelisah, cemas, atau gugup?",
+        "Apakah Anda sering merasa terganggu karena tidak bisa berhenti khawatir?",
+        "Apakah Anda tidak hobi bepergian dengan teman Anda?",
+        "Apakah kamu lebih suka menyendiri daripada bermain bareng teman-teman?",
+        "Apakah perasaan cemas atau tidak nyaman di sekitar orang lain mengganggu Anda?",
+        "Pernahkah Anda mengalami penurunan minat terhadap aktivitas yang biasanya Anda nikmati selama seminggu atau lebih?",
+        "Apakah Anda merasa sangat lelah dan tidak ingin bersosialisasi?",
+        "Apakah Anda sering berdiam diri karena merasa stress dan penat?",
+    ]
+
+    quiz = Quiz(root, pertanyaan, username)
+
+    root.mainloop()
